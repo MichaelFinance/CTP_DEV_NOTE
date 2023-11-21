@@ -237,14 +237,6 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
-/Dependency/boost_1_80_0/*
 
-/Atrader/DepthMarketData
-/Atrader/DepthMarketData-journal
-/Atrader/DepthMarketData
-/Atrader/DepthMarketDataTest
-/Atrader/DepthMarketDataTest-journal
-/Atrader/script/*
-/Atrader/config/*
-/Atrader/config/*
-/Atrader/config/Config.ini
+
+/CTP_CPP_Note/boost_1_80_0/*
