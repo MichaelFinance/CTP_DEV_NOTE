@@ -8,8 +8,8 @@ namespace MarketProxy
 	{
 	public:
 		virtual ~MarketApi() = default;
-
 		MarketApi();
+		
 		void OnFrontConnected() override;
 		//登录请求响应
 		void OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin, CThostFtdcRspInfoField* pRspInfo,
@@ -21,11 +21,15 @@ namespace MarketProxy
 		//行情订阅响应
 		void subscribeMarketData(const std::string& instrumendId);
 
-
+		
 
 
 	private:
 		CThostFtdcMdApi*  ctpMdApi_;
+		
+		
+
+
 
 	};
 

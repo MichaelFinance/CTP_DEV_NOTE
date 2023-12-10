@@ -149,9 +149,14 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="Instrument.h" />
     <ClInclude Include="LockingQueue.h" />
+    <ClInclude Include="Macro.h" />
     <ClInclude Include="MacroDefine.h" />
     <ClInclude Include="MarketApi.h" />
+    <ClInclude Include="Order.h" />
     <ClInclude Include="TradeApi.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

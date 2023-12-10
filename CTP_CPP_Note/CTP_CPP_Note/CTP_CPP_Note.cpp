@@ -9,7 +9,12 @@
 
 int main() {
 	std::string input;
-	auto tradeApi = new TradeProxy::TradeApi();
+
+
+	auto tradeApi = TradeProxy::TradeApi::instance();
+	tradeApi->start();
+
+
 	std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 	tradeApi->reqQryInstrument(Config::CFFEX);
 	//std::this_thread::sleep_for(std::chrono::milliseconds(4000));
@@ -22,6 +27,8 @@ int main() {
 	//tradeApi->reqQryInstrument(Config::SHFE);
 
 	auto marketApi = new MarketProxy::MarketApi();
+
+
 	std::this_thread::sleep_for(std::chrono::milliseconds(4000));
 
 	
@@ -35,13 +42,13 @@ int main() {
 
 	std::string instrumentId = "MO2401-P-5400";
 	char side = '0';
-	double price = 10;
+	double price = 10.1;
 	int size = 20;
-
+	std::cin >> input;
 	tradeApi->sendFakOrder(instrumentId, side, price, size);
 	std::cin >> input;
 	tradeApi->sendFokOrder(instrumentId, side, price, size);
-
+	std::cin >> input;
 
 
 

@@ -18,22 +18,16 @@
     <ClCompile Include="CTP_CPP_Note.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TradeApi.cpp">
+    <ClCompile Include="MarketApi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MarketApi.cpp">
+    <ClCompile Include="TradeApi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TradeApi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MarketApi.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LockingQueue.h">
       <Filter>Header Files</Filter>
@@ -44,5 +38,20 @@
     <ClInclude Include="Instrument.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Macro.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Order.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MarketApi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TradeApi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

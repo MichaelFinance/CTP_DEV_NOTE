@@ -17,6 +17,37 @@ namespace TradeProxy
 		static int TradeProxyRequestId = 0;
 	}
 
+	std::mutex TradeApi::tradeInstanceMtx;
+	TradeApiPtr TradeApi::tradeInstance;
+
+	TradeApiPtr TradeApi::instance()
+	{
+		std::lock_guard<std::mutex> _(tradeInstanceMtx);
+		if (!tradeInstance)
+			tradeInstance.reset(new TradeApi());
+		return tradeInstance;
+	}
+
+	void TradeApi::start()
+	{
+		{
+			std::lock_guard<std::mutex> _(commonMsgQueueMtx);
+			if (!workThread_)
+			{
+				workThread_.reset(new std::thread(std::bind(&TradeApi::processTradeTaskThread, this)));
+			}
+		}
+	}
+
+
+	// CTP convert to internal order structure.
+	void convert2Order(const CThostFtdcOrderField* pOrder, OrderPtr& order)
+	{
+		order->setPrice(pOrder->LimitPrice);
+		order->setSize(pOrder->VolumeTotal);
+	}
+
+
 	TradeApi::TradeApi()
 	{
 		auto currentPath = std::filesystem::current_path();
@@ -143,8 +174,12 @@ namespace TradeProxy
 	void TradeApi::OnRtnOrder(CThostFtdcOrderField* pOrder)
 	{
 		std::cout << __FUNCTION__ << std::endl;
-
-
+		const TradeMessage::TradeTaskPtr msg = std::make_shared<TradeMessage::TradeTask>();
+		msg->setName(TradeMessage::TradeTaskName::OnRtnOrder);
+		const auto data = new CThostFtdcOrderField();
+		*data = *pOrder;
+		msg->setMessage(data);
+		tradeMsgQ.push(msg);
 	}
 
 	void TradeApi::OnRspOrderInsert(CThostFtdcInputOrderField* pInputOrder, CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast)
@@ -160,6 +195,13 @@ namespace TradeProxy
 	void TradeApi::OnRtnTrade(CThostFtdcTradeField* pTrade)
 	{
 		std::cout << __FUNCTION__ << std::endl;
+		const TradeMessage::TradeTaskPtr msg = std::make_shared<TradeMessage::TradeTask>();
+		msg->setName(TradeMessage::TradeTaskName::OnRtnTrade);
+		const auto data = new CThostFtdcTradeField();
+		*data = *pTrade;
+		msg->setMessage(data);
+		tradeMsgQ.push(msg);
+
 	}
 
 
@@ -250,6 +292,55 @@ namespace TradeProxy
 		order.CombOffsetFlag[0] = THOST_FTDC_OF_Close;
 		const int reqResult = ctpTradeApi_->ReqOrderInsert(&order, ++TradeProxyRequestId);
 		std::cout << __FUNCTION__ << "|response: " << reqResult << std::endl;
+	}
+
+	void TradeApi::processOrder(const TradeMessage::TradeTaskPtr& orderInfo) const
+	{
+		const auto pOrder = static_cast<CThostFtdcOrderField*>(orderInfo->getMessage());
+		OrderPtr order = std::make_shared<Order>();
+		convert2Order(pOrder, order);
+		std::cout << order->getPrice();
+
+	}
+
+
+
+	void TradeApi::processTradeTaskThread()
+	{
+		TradeMessage::TradeTaskPtr tradeTask = nullptr;
+		while(true)
+		{
+			tradeMsgQ.waitAndPop(tradeTask);
+			try
+			{
+				if(!tradeTask)
+					continue;
+				TradeMessage::TradeTaskName task = tradeTask->getName();
+				
+				switch (task)
+				{
+				case TradeMessage::TradeTaskName::OnRspQryInstrument:
+					std::cout << "get one instrument" << std::endl;
+					break;
+				case TradeMessage::TradeTaskName::OnRtnOrder:
+					processOrder(tradeTask);
+					break;
+				case TradeMessage::TradeTaskName::OnRtnTrade:
+					std::cout << std::endl;
+					std::cout << "get one trade" << std::endl;
+					break;
+
+
+				default: ;
+				}
+
+				
+			}
+			catch (std::exception& ex)								
+			{																					
+			}
+		}
+
 	}
 
 }
